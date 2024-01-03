@@ -1,32 +1,29 @@
 
 #include <Preferences.h>
 #include <WiFi.h>
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
 
 
 
 Preferences preferences;
-AsyncWebServer server(80);
 
-String ssid="";
-String pass="";
+const char* ssid     = "Object";
+const char* password = "1234567890";
+String ssid_sta;
+String pass_sta;
 
-
-
-void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(115200);
-  preferences.begin("wifi", false);
-  ssid = preferences.getString("ssid");
-  if (ssid=="") {
-    Serial.println("Nema snimljena mreza...");
-    preferences.putString("ssid", "VesnaR_3");
+void setup()
+{
+    Serial.begin(115200);
+    preferences.begin("wifi", false);
+    ssid_sta=preferences.getString("ssid");
+    pass_sta=preferences.getString("pass");
+    if (ssid_sta == ""){
+    Serial.println("\n[*] Creating AP");
+    WiFi.mode(WIFI_AP);
+    WiFi.softAP(ssid, password);
+    Serial.print("[+] AP Created with IP Gateway ");
+    Serial.println(WiFi.softAPIP());
     }
-  else {
-    
-  }
-  preferences.end();
 }
 
 void loop() {
