@@ -3,6 +3,7 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include "index.h"
 
 #define WIFIRSTPIN 23
 
@@ -15,6 +16,18 @@ String ssid     = "Object_"+appendToSsid;
 String password = "1234567890";
 String ssid_sta;
 String pass_sta;
+String processor(const String& var){
+  //Serial.println(var);
+  if(var == "BUTTONPLACEHOLDER"){
+    String buttons = "";
+    buttons += "<h4>Output - GPIO 2</h4><label class=\"switch\"><input type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"2\" ><span class=\"slider\"></span></label>";
+    buttons += "<h4>Output - GPIO 4</h4><label class=\"switch\"><input type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"4\" ><span class=\"slider\"></span></label>";
+    buttons += "<h4>Output - GPIO 33</h4><label class=\"switch\"><input type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"33\" ><span class=\"slider\"></span></label>";
+    return buttons;
+  }
+  return String();
+}
+
 
 void setup()
 {
@@ -29,6 +42,12 @@ void setup()
         WiFi.softAP(ssid, password);
         Serial.print("[+] AP Created with IP Gateway ");
         Serial.println(WiFi.softAPIP());
+
+        server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+              request->send_P(200, "text/html", index_html, processor);
+                });
+        server.begin();
+
     }
 }
 
