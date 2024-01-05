@@ -10,6 +10,15 @@
 Preferences preferences;
 AsyncWebServer server(80);
 
+typedef struct {
+    String no;
+    String wifiname;
+    String rssi;
+} item;
+item items[20];
+size_t num_items = 0;
+
+
 String wifiMacString = WiFi.macAddress();
 String appendToSsid = wifiMacString.substring(9,11)+wifiMacString.substring(12,14)+wifiMacString.substring(15,17);
 String ssid     = "Object_"+appendToSsid;
@@ -18,20 +27,54 @@ String ssid_sta;
 String pass_sta;
 String processor(const String& var){
   //Serial.println(var);
-  if(var == "BUTTONPLACEHOLDER"){
-    String buttons = "";
-    buttons += "<h4>Output - GPIO 2</h4><label class=\"switch\"><input type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"2\" ><span class=\"slider\"></span></label>";
-    buttons += "<h4>Output - GPIO 4</h4><label class=\"switch\"><input type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"4\" ><span class=\"slider\"></span></label>";
-    buttons += "<h4>Output - GPIO 33</h4><label class=\"switch\"><input type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"33\" ><span class=\"slider\"></span></label>";
-    return buttons;
+  if(var == "WIFILIST"){
+    String wifi_list = "";
+    for (int i=0; i<num_items; i++) {
+      wifi_list += "<li>"+items[i].wifiname+"&emsp;"+items[i].rssi+" db<br>";  
+      }
+    return wifi_list;
   }
   return String();
 }
 
+void scanNetwork() {
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  delay(100);  
+  Serial.println("scan start");
+
+  // WiFi.scanNetworks will return the number of networks found
+  int n = WiFi.scanNetworks();
+  num_items = n;
+  Serial.println("scan done");
+  if (n == 0) {
+      Serial.println("no networks found");
+  } else {
+    Serial.print(n);
+    Serial.println(" networks found");
+    for (int i = 0; i < n; ++i) {
+      items[i].no = i;
+      // Print SSID and RSSI for each network found
+      Serial.print(i + 1);
+      Serial.print(": ");
+      Serial.print(WiFi.SSID(i));
+      items[i].wifiname=WiFi.SSID(i);
+      Serial.print(" (");
+      Serial.print(WiFi.RSSI(i));
+      items[i].rssi=WiFi.RSSI(i);
+      Serial.print(")");
+      Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?" ":"*");
+      delay(10);
+    }
+  }
+  Serial.println("");  
+  
+  }
 
 void setup()
 {
     Serial.begin(115200);
+    scanNetwork();
     pinMode(WIFIRSTPIN, INPUT_PULLUP);
     preferences.begin("wifi", false);
     ssid_sta=preferences.getString("ssid");
