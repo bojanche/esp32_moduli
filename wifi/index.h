@@ -9,14 +9,32 @@ const char index_html[] PROGMEM = R"rawliteral(
     h2 {font-size: 3.0rem;}
     p {font-size: 3.0rem;}
     body {max-width: 600px; margin:0px auto; padding-bottom: 25px;}
-    ul {text-align: left;}
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+      }
+td, th {
+  border: 0px;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
   </style>
 </head>
 <body>
   <h2>Sensor Object</h2><h3>* WiFi Config *</h3>
-  <ul>
+  <table>
+    <tr>
+      <th>Company</th>
+      <th>Contact</th>
+      <th>Country</th>
+    </tr>
   %WIFILIST%
-  </ul>
+</table>
 <script>
 </script>
 </body>
