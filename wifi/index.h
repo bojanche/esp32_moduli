@@ -12,7 +12,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     table {
       font-family: arial, sans-serif;
       border-collapse: collapse;
-      width: 100%;
+      width: 100%%;
       }
 td, th {
   border: 0px;
@@ -29,13 +29,23 @@ tr:nth-child(even) {
   <h2>Sensor Object</h2><h3>* WiFi Config *</h3>
   <table>
     <tr>
-      <th>Company</th>
-      <th>Contact</th>
-      <th>Country</th>
+      <th>SSID</th>
+      <th>RSSI</th>
+      <th>Connect</th>
     </tr>
   %WIFILIST%
 </table>
 <script>
+function enterPass() {
+  let text;
+  let person = prompt("Please enter WiFi pass:", "Harry Potter");
+  if (person == null || person == "") {
+    text = "User cancelled the prompt.";
+  } else {
+    text = "Hello " + person + "! How are you today?";
+  }
+  document.getElementById("demo").innerHTML = text;
+}
 </script>
 </body>
 </html>

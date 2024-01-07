@@ -30,7 +30,7 @@ String processor(const String& var){
   if(var == "WIFILIST"){
     String wifi_list = "";
     for (int i=0; i<num_items; i++) {
-      wifi_list += "<tr><td>"+items[i].wifiname+"</td><td>"+items[i].rssi+"db</td><td><a href=\"#\">Connect</a></td></tr>";  
+      wifi_list += "<tr><td>"+items[i].wifiname+"</td><td>"+items[i].rssi+"db</td><td><a href=\"#\" onclick="enterPass()">Connect</a></td></tr>";  
       }
     return wifi_list;
   }
