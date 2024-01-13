@@ -30,7 +30,7 @@ String processor(const String& var){
   if(var == "WIFILIST"){
     String wifi_list = "";
     for (int i=0; i<num_items; i++) {
-      wifi_list += "<tr><td>"+items[i].wifiname+"</td><td>"+items[i].rssi+"db</td><td><a href=\"#\" onclick="enterPass()">Connect</a></td></tr>";  
+      wifi_list += "<tr><td id=\""+String(i+1)+"\">"+items[i].wifiname+"</td><td>"+items[i].rssi+"db</td><td><a href=\"#\" onclick=\"enterPass('"+String(i+1)+"');\">Connect</a></td></tr>";  
       }
     return wifi_list;
   }
@@ -89,9 +89,56 @@ void setup()
         server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
               request->send_P(200, "text/html", index_html, processor);
                 });
+        server.on("/wifi", HTTP_GET, [](AsyncWebServerRequest *request){
+          if (request->hasParam("ssid")&&request->hasParam("pass")) {
+              ssid_sta = request->getParam("ssid")->value();
+              Serial.println(ssid_sta);
+              pass_sta = request->getParam("pass")->value();
+              Serial.println(pass_sta);
+              WiFi.mode(WIFI_STA);
+              WiFi.disconnect();
+              delay(100);
+              WiFi.begin(ssid_sta, pass_sta);
+              Serial.println("\nConnecting");
+              int iter=0;
+              while(WiFi.status() != WL_CONNECTED&&iter<10){
+                  Serial.print(".");
+                  delay(100);
+                  iter++;
+              }
+              if (WiFi.status() == WL_CONNECTED) {
+                    ssid_sta=preferences.putString("ssid", ssid_sta);
+                    pass_sta=preferences.putString("pass", pass_sta);
+                    Serial.println(WiFi.localIP());
+              }
+              }
+          
+      request->send_P(200, "text/html", index_html, processor);
+        });
         server.begin();
 
-    }
+    } else {
+              WiFi.mode(WIFI_STA);
+              WiFi.begin(ssid_sta, pass_sta);
+              Serial.println("\nConnecting");
+              int iter1=0;
+              while(WiFi.status() != WL_CONNECTED&&iter1<10){
+                  Serial.print(".");
+                  delay(100);
+                  iter1++;
+              }
+              if (WiFi.status() != WL_CONNECTED) {
+                Serial.println("\n[*] Creating AP");
+                WiFi.mode(WIFI_AP);
+                WiFi.softAP(ssid, password);
+                Serial.print("[+] AP Created with IP Gateway ");
+                Serial.println(WiFi.softAPIP());
+                
+              }      
+          server.begin();
+      
+      
+      }
 }
 
 void loop() {

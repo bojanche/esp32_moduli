@@ -28,23 +28,28 @@ tr:nth-child(even) {
 <body>
   <h2>Sensor Object</h2><h3>* WiFi Config *</h3>
   <table>
+    <thead>
     <tr>
       <th>SSID</th>
       <th>RSSI</th>
       <th>Connect</th>
     </tr>
+    </thead>
+    <tbody>
   %WIFILIST%
+    </tbody>
 </table>
 <script>
-function enterPass() {
-  let text;
-  let person = prompt("Please enter WiFi pass:", "Harry Potter");
-  if (person == null || person == "") {
-    text = "User cancelled the prompt.";
+function enterPass(x) {
+  let xhr = new XMLHttpRequest();
+  let wifiSSID = document.getElementById(x).innerHTML;
+  let wifipass = prompt("Please enter WiFi pass:");
+  if (wifipass == null || wifipass == "") {
+    alert("You have entered empty pass.");
   } else {
-    text = "Hello " + person + "! How are you today?";
+      xhr.open("GET", "wifi?ssid="+wifiSSID+"&pass="+wifipass);
+      xhr.send(null);
   }
-  document.getElementById("demo").innerHTML = text;
 }
 </script>
 </body>
